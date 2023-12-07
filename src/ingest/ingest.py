@@ -1,6 +1,7 @@
 import docx2txt
 from pypdf import PdfReader
-import re
+import requests
+from bs4 import BeautifulSoup
 
 from langchain.docstore.document import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -30,6 +31,21 @@ def get_text_from_file(
         # text = re.sub(r"\n\s*\n", "\n\n", text)
         return text
     
+def get_soup(url):
+    response = requests.get(url)
+    return BeautifulSoup(response.content, "html.parser")
+
+def get_all_read_online_url_exts(base_url):
+    messages = list()
+    response = requests.get(base_url)
+    html_content = response.content
+    soup = BeautifulSoup(html_content, "html.parser")
+    for row in soup.find_all("tr", class_="document-row"):
+        summary = row.text.strip()
+        url_tail = row.find("a")["href"]
+        messages.append([url_tail, summary])
+    return messages
+
 def text_to_docs(
         text: AnyStr,
         filename: AnyStr
