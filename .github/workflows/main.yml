@@ -1,0 +1,10 @@
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  test_action:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Print Success"
+        run: echo "Action ran successfully"
